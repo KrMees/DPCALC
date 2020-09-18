@@ -1,0 +1,141 @@
+using System.Windows.Forms;
+using System.Drawing;
+using System.Runtime.Remoting.Messaging;
+using System.Security.Policy;
+
+namespace CalcDP
+{
+    class Screen : Form
+    {
+        private TextBox inputDP;
+        private TextBox inputDoc;
+        private TextBox inputD;
+        private TextBox inputH;
+        private Label   result;
+    
+        public Screen()
+        {
+            Label DPtext;
+            Label Doctext;
+            Label Timetext;
+            Button CalcButton;
+
+                DPtext  = new Label();
+                Doctext = new Label();
+                Timetext = new Label();
+                CalcButton = new Button();
+            this.inputDP = new TextBox();
+            this.inputDoc = new TextBox();
+            this.inputD = new TextBox();
+            this.inputH = new TextBox();
+            this.result = new Label();
+
+                 DPtext.Location = new Point(40, 10);
+                 Doctext.Location = new Point(40, 30);
+                 Timetext.Location = new Point(40, 50);
+            CalcButton.Location = new Point( 40, 70);
+            this.inputDP.Location = new Point(180, 5);
+            this.inputDoc.Location = new Point(180, 25);
+            this.inputD.Location = new Point(180, 45);
+            this.inputH.Location = new Point(210, 45);
+            this.result.Location = new Point(180, 70);
+                 DPtext.Size     = new Size (120, 20);
+                 Doctext.Size    = new Size(120, 20);
+                Timetext.Size = new Size(120, 20);
+            CalcButton.Size     = new Size ( 80, 20);
+            this.inputDP.Size = new Size(80, 20);
+            this.inputDoc.Size = new Size(80, 20);
+            this.inputD.Size = new Size(20, 20);
+            this.inputH.Size = new Size(20, 20);
+            this.result.Size = new Size(120, 40);
+                DPtext.Text     = "Start DP";
+                Doctext.Text = "RE Doc Level";
+            Timetext.Text = "Day/Hour in RB";
+                CalcButton.Text     = "Calculate DP";
+                CalcButton.Click   += this.calculate;
+
+            this.Text = "RB Calc";
+            this.ClientSize = new Size(300, 100);
+            this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(DPtext);
+            this.Controls.Add(Doctext);
+            this.Controls.Add(Timetext);
+            this.Controls.Add(CalcButton);
+            this.Controls.Add(this.inputDP);
+            this.Controls.Add(this.inputDoc);
+            this.Controls.Add(this.inputD);
+            this.Controls.Add(this.inputH);
+            this.Controls.Add(this.result);
+        }
+
+        private void calculate(object sender, System.EventArgs e)
+        {
+            try
+            {
+                float StartDP = float.Parse(inputDP.Text);
+                float DocLVL = float.Parse(inputDoc.Text);
+                float Day = float.Parse(inputD.Text);
+                float Hour = float.Parse(inputH.Text);
+                double sumTime = this.totTime(Day, Hour);
+                double Doc = this.DocGain(DocLVL);
+                double Daily = this.DailyGain(StartDP);
+                double Result = this.EndResult(sumTime, Daily, Doc, StartDP);
+                result.Text = Result.ToString();
+            }
+            catch
+            {
+                result.Text = "Calculation error, check values";
+            }
+            
+        }
+        private float totTime(float d, float h)
+        {
+            return d + (h/24);
+        }
+
+        private double DailyGain(float z)
+        {
+            if (z < 51)
+            {
+                return 5;
+            }
+            if (z > 89)
+            {
+                return 1;
+            }
+            else
+            {
+                return (25-((z-50)*1.5)+(z-50))/5;
+            }
+        }
+        private double DocGain(double d)
+        {
+            if (d > 49)
+            {
+                return 1.04 + ((d-45)/5) * 0.01;
+            }
+            else 
+            {
+                return 1;
+            }
+        }
+
+        private double EndResult(double Time,double Gain,double Doctor, double Start)
+        {
+            return Gain*Doctor*Time+Start;
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // Screen
+            // 
+            this.BackColor = System.Drawing.SystemColors.Desktop;
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "Screen";
+            this.ResumeLayout(false);
+
+        }
+    }
+}
